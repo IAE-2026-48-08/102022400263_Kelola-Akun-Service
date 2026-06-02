@@ -1,0 +1,14 @@
+"Tipe data untuk merepresentasikan struktur Akun"
+type Account {
+    id: ID!
+    nama: String!
+    email: String!
+    saldo: Int!
+    status_validasi: String!
+}
+
+"Definisi Query yang tersedia untuk diakses klien"
+type Query {
+    "Mengambil daftar semua akun nasabah (sama dengan GET /api/v1/accounts)"
+    accounts: [Account!]! @field(resolver: "App\\GraphQL\\Queries\\Accounts")
+}

@@ -1,0 +1,147 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Account Service API",
+        "description": "Dokumentasi API untuk Service 1 - Kelola Akun (Tugas 2 IAE)",
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://127.0.0.1:8000",
+            "description": "Local Development Server"
+        }
+    ],
+    "paths": {
+        "/api/v1/accounts": {
+            "get": {
+                "tags": [
+                    "Accounts"
+                ],
+                "summary": "Ambil daftar semua akun nasabah",
+                "operationId": "4bbac367ecf8af0f1c2dbad57ff21dc3",
+                "responses": {
+                    "200": {
+                        "description": "Berhasil mengambil data"
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/accounts/{id}": {
+            "get": {
+                "tags": [
+                    "Accounts"
+                ],
+                "summary": "Ambil detail & saldo akun tertentu",
+                "operationId": "577c024ccebfc85ec3189eb045d43f2b",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Berhasil mengambil detail akun"
+                    },
+                    "404": {
+                        "description": "Akun tidak ditemukan"
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/accounts/{id}/validation-status": {
+            "get": {
+                "tags": [
+                    "Accounts"
+                ],
+                "summary": "Cek hasil validasi akun nasabah",
+                "operationId": "74d63b396e4dcc6fe300ef9eb69d1f44",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Berhasil mengecek status validasi"
+                    },
+                    "404": {
+                        "description": "Akun tidak ditemukan"
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/accounts/{id}/validate": {
+            "post": {
+                "tags": [
+                    "Accounts"
+                ],
+                "summary": "Memvalidasi kelayakan akun nasabah",
+                "operationId": "0ab7356115ceda6032b8a0022f1433c7",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Akun berhasil divalidasi"
+                    },
+                    "404": {
+                        "description": "Akun tidak ditemukan"
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "ApiKeyAuth": {
+                "type": "apiKey",
+                "description": "Masukkan NIM kamu sebagai API Key (contoh: 102022400263)",
+                "name": "X-IAE-KEY",
+                "in": "header"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Accounts",
+            "description": "Accounts"
+        }
+    ]
+}
