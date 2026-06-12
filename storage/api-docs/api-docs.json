@@ -100,7 +100,7 @@
                 "tags": [
                     "Accounts"
                 ],
-                "summary": "Memvalidasi kelayakan akun nasabah",
+                "summary": "Memvalidasi kelayakan akun nasabah dan mencatat Audit SOAP",
                 "operationId": "0ab7356115ceda6032b8a0022f1433c7",
                 "parameters": [
                     {
@@ -114,10 +114,13 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Akun berhasil divalidasi"
+                        "description": "Akun berhasil divalidasi dan diaudit"
                     },
                     "404": {
                         "description": "Akun tidak ditemukan"
+                    },
+                    "500": {
+                        "description": "Gagal memproses audit atau response SOAP invalid"
                     }
                 },
                 "security": [
