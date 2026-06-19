@@ -137,7 +137,8 @@ class AccountController extends Controller
             // FASE 1: REQUEST M2M TOKEN KE SERVER SSO (LOGIN SEBAGAI SERVICE)
             // ====================================================================
             $ssoResponse = Http::post('https://iae-sso.virtualfri.id/api/v1/auth/token', [
-                'api_key' => 'KEY-MHS-274'
+                'api_key' => 'KEY-MHS-274',
+                'nim'     => '102022400263'
             ]);
 
             if ($ssoResponse->failed()) {
