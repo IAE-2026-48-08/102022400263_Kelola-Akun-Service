@@ -169,7 +169,7 @@ class AccountController extends Controller
             <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:iae="http://iae.central/audit">
                 <soap:Body>
                     <iae:AuditRequest>
-                        <iae:TeamID>TEAM04</iae:TeamID>
+                        <iae:TeamID>TEAM-04</iae:TeamID>
                         <iae:ActivityName>AccountValidated</iae:ActivityName>
                         <iae:LogContent><![CDATA[' . $logData . ']]></iae:LogContent>
                     </iae:AuditRequest>
@@ -210,7 +210,7 @@ class AccountController extends Controller
                 'event_name'   => 'account.validated',
                 'service_name' => 'Account-Service',
                 'api_version'  => 'v1',
-                'team_id'      => 'TEAM04',
+                'team_id'      => 'TEAM-04',
                 'timestamp'    => now()->toIso8601String(),
                 'payload'      => [
                     'account_id'      => (int) $id,
