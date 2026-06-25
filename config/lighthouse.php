@@ -13,7 +13,6 @@ return [
         'name' => 'graphql',
         'middleware' => [
             'api',
-            \App\Http\Middleware\CheckIaeKey::class,
         ],
     ],
 

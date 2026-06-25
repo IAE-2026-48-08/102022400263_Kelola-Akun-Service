@@ -100,7 +100,7 @@
                 "tags": [
                     "Accounts"
                 ],
-                "summary": "Memvalidasi kelayakan akun nasabah dan mencatat Audit SOAP",
+                "summary": "Validasi akun nasabah dengan orkestrasi SOAP + RabbitMQ",
                 "operationId": "0ab7356115ceda6032b8a0022f1433c7",
                 "parameters": [
                     {
@@ -113,19 +113,61 @@
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "Akun berhasil divalidasi dan diaudit"
+                    "201": {
+                        "description": "Akun berhasil divalidasi, diaudit, dan disebarkan ke broker pesan"
                     },
                     "404": {
                         "description": "Akun tidak ditemukan"
                     },
                     "500": {
-                        "description": "Gagal memproses audit atau response SOAP invalid"
+                        "description": "Gagal memproses orkestrasi ke server pusat"
                     }
                 },
                 "security": [
                     {
                         "ApiKeyAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/accounts/{id}/validate-enterprise": {
+            "post": {
+                "tags": [
+                    "Accounts"
+                ],
+                "summary": "[Tugas 3] Enterprise Validation: Federated SSO + SOAP Audit + RabbitMQ Broadcast",
+                "description": "Endpoint ini dilindungi sso.federated middleware yang memverifikasi JWT dari SSO Pusat (iae-sso.virtualfri.id). Setelah token divalidasi dan role dipetakan ke tabel lokal, orkestrasi SOAP audit dan RabbitMQ broadcast dieksekusi penuh. Kirimkan JWT Bearer di header Authorization.",
+                "operationId": "5deeab822f8bdfaa48e173e54cbba2f8",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Akun berhasil divalidasi via Federated SSO + SOAP + RabbitMQ"
+                    },
+                    "401": {
+                        "description": "Unauthorized: JWT SSO tidak valid atau tidak disertakan"
+                    },
+                    "404": {
+                        "description": "Akun tidak ditemukan"
+                    },
+                    "500": {
+                        "description": "Gagal memproses orkestrasi ke server pusat"
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    },
+                    {
+                        "bearerAuth": []
                     }
                 ]
             }
@@ -138,6 +180,12 @@
                 "description": "Masukkan NIM kamu sebagai API Key (contoh: 102022400263)",
                 "name": "X-IAE-KEY",
                 "in": "header"
+            },
+            "bearerAuth": {
+                "type": "http",
+                "description": "[Tugas 3] JWT Bearer Token dari SSO Pusat (iae-sso.virtualfri.id). Diperlukan untuk endpoint /validate-enterprise.",
+                "bearerFormat": "JWT",
+                "scheme": "bearer"
             }
         }
     },

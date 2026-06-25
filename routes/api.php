@@ -5,11 +5,21 @@ use App\Http\Controllers\Api\V1\AccountController;
 use App\Http\Middleware\CheckIaeKey;
 
 Route::prefix('v1')->middleware(CheckIaeKey::class)->group(function () {
+    // =========================================================================
+    // TUGAS 2 — REST API Kelola Akun (Standard IAE-T2)
+    // Dilindungi X-IAE-KEY (NIM mahasiswa sebagai API Key)
+    // =========================================================================
     Route::get('/accounts', [AccountController::class, 'index']);
     Route::get('/accounts/{id}', [AccountController::class, 'show']);
     Route::get('/accounts/{id}/validation-status', [AccountController::class, 'validationStatus']);
     Route::post('/accounts/{id}/validate', [AccountController::class, 'validateAccount']);
 
-    Route::post('/accounts/{id}/validate', [AccountController::class, 'validateAccount'])
+    // =========================================================================
+    // TUGAS 3 — Enterprise Validation dengan Federated SSO (SSO + SOAP + AMQP)
+    // Dilindungi X-IAE-KEY + JWT Bearer dari SSO Pusat (sso.federated middleware)
+    // Path berbeda agar tidak tabrakan dengan route Tugas 2 di atas.
+    // Endpoint: POST /api/v1/accounts/{id}/validate-enterprise
+    // =========================================================================
+    Route::post('/accounts/{id}/validate-enterprise', [AccountController::class, 'validateAccountEnterprise'])
         ->middleware('sso.federated');
 });

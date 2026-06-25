@@ -24,6 +24,13 @@ use Illuminate\Support\Facades\DB;
     name: "X-IAE-KEY",
     description: "Masukkan NIM kamu sebagai API Key (contoh: 102022400263)"
 )]
+#[OA\SecurityScheme(
+    securityScheme: "bearerAuth",
+    type: "http",
+    scheme: "bearer",
+    bearerFormat: "JWT",
+    description: "[Tugas 3] JWT Bearer Token dari SSO Pusat (iae-sso.virtualfri.id). Diperlukan untuk endpoint /validate-enterprise."
+)]
 class AccountController extends Controller
 {
     private $dummyAccounts = [
@@ -115,14 +122,15 @@ class AccountController extends Controller
         return $this->successResponse($data, 'Status validasi akun berhasil diambil');
     }
 
+    // ----- TUGAS 2: Standard Validation (X-IAE-KEY only) -----
     #[OA\Post(
         path: "/api/v1/accounts/{id}/validate",
-        summary: "Memvalidasi kelayakan akun nasabah, mencatat Audit SOAP, dan Broadcast RabbitMQ",
+        summary: "Validasi akun nasabah dengan orkestrasi SOAP + RabbitMQ",
         tags: ["Accounts"],
         security: [["ApiKeyAuth" => []]]
     )]
     #[OA\Parameter(name: "id", in: "path", required: true, schema: new OA\Schema(type: "integer"))]
-    #[OA\Response(response: 200, description: "Akun berhasil divalidasi, diaudit, dan disebarkan ke broker pesan")]
+    #[OA\Response(response: 201, description: "Akun berhasil divalidasi, diaudit, dan disebarkan ke broker pesan")]
     #[OA\Response(response: 404, description: "Akun tidak ditemukan")]
     #[OA\Response(response: 500, description: "Gagal memproses orkestrasi ke server pusat")]
     public function validateAccount(Request $request, $id)
@@ -238,10 +246,34 @@ class AccountController extends Controller
                 'broadcast_status' => 'success'
             ];
 
-            return $this->successResponse($data, 'Account validation processed, audited, and broadcasted successfully', 200);
+            return $this->successResponse($data, 'Account validation processed, audited, and broadcasted successfully', 201);
 
         } catch (\Exception $e) {
             return $this->errorResponse('Terjadi kesalahan pada proses integrasi: ' . $e->getMessage(), 500);
         }
+    }
+
+    // =========================================================================
+    // TUGAS 3: Enterprise Validation — Federated SSO + SOAP + RabbitMQ
+    // Diproteksi middleware sso.federated (JWT dari SSO Pusat wajib ada)
+    // Mendelegasikan ke validateAccount() setelah JWT diverifikasi middleware
+    // =========================================================================
+    #[OA\Post(
+        path: "/api/v1/accounts/{id}/validate-enterprise",
+        summary: "[Tugas 3] Enterprise Validation: Federated SSO + SOAP Audit + RabbitMQ Broadcast",
+        description: "Endpoint ini dilindungi sso.federated middleware yang memverifikasi JWT dari SSO Pusat (iae-sso.virtualfri.id). Setelah token divalidasi dan role dipetakan ke tabel lokal, orkestrasi SOAP audit dan RabbitMQ broadcast dieksekusi penuh. Kirimkan JWT Bearer di header Authorization.",
+        tags: ["Accounts"],
+        security: [["ApiKeyAuth" => []], ["bearerAuth" => []]]
+    )]
+    #[OA\Parameter(name: "id", in: "path", required: true, schema: new OA\Schema(type: "integer"))]
+    #[OA\Response(response: 201, description: "Akun berhasil divalidasi via Federated SSO + SOAP + RabbitMQ")]
+    #[OA\Response(response: 401, description: "Unauthorized: JWT SSO tidak valid atau tidak disertakan")]
+    #[OA\Response(response: 404, description: "Akun tidak ditemukan")]
+    #[OA\Response(response: 500, description: "Gagal memproses orkestrasi ke server pusat")]
+    public function validateAccountEnterprise(Request $request, $id)
+    {
+        // Delegate ke validateAccount — middleware sso.federated sudah
+        // memverifikasi JWT dan memetakan role sebelum sampai ke sini
+        return $this->validateAccount($request, $id);
     }
 }
