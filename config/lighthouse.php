@@ -20,7 +20,7 @@ return [
     'schema_path' => base_path('graphql/schema.graphql'),
 
     'schema_cache' => [
-        'enable' => env('LIGHTHOUSE_SCHEMA_CACHE_ENABLE', env('APP_ENV') !== 'local'),
+        'enable' => env('LIGHTHOUSE_SCHEMA_CACHE_ENABLE', false),
         'path' => env('LIGHTHOUSE_SCHEMA_CACHE_PATH', base_path('bootstrap/cache/lighthouse-schema.php')),
     ],
 

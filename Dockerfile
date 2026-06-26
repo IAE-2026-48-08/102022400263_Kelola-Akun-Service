@@ -32,6 +32,10 @@ RUN composer install --no-dev --optimize-autoloader --no-interaction
 RUN cp -n .env.example .env || true
 RUN php artisan key:generate --force
 
+# Generate Swagger docs and clear Lighthouse cache on build
+RUN php artisan l5-swagger:generate
+RUN php artisan lighthouse:clear-cache
+
 # Set permission yang benar untuk storage dan cache
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache \
     && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
