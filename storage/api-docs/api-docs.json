@@ -29,6 +29,23 @@
                         "ApiKeyAuth": []
                     }
                 ]
+            },
+            "post": {
+                "tags": [
+                    "Accounts"
+                ],
+                "summary": "Buat akun nasabah baru",
+                "operationId": "ca10abbfc49106114ac7da3d8678501b",
+                "responses": {
+                    "201": {
+                        "description": "Akun berhasil dibuat"
+                    }
+                },
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ]
             }
         },
         "/api/v1/accounts/{id}": {

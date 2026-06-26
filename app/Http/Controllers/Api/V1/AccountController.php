@@ -84,6 +84,25 @@ class AccountController extends Controller
         return $this->successResponse(array_values($this->dummyAccounts), 'Daftar semua akun nasabah berhasil diambil');
     }
 
+    #[OA\Post(
+        path: "/api/v1/accounts",
+        summary: "Buat akun nasabah baru",
+        tags: ["Accounts"],
+        security: [["ApiKeyAuth" => []]]
+    )]
+    #[OA\Response(response: 201, description: "Akun berhasil dibuat")]
+    public function store(Request $request)
+    {
+        $newAccount = [
+            'id' => count($this->dummyAccounts) + 1,
+            'nama' => 'Nasabah Baru',
+            'email' => 'baru@example.com',
+            'saldo' => 0,
+            'status_validasi' => 'pending'
+        ];
+        return $this->successResponse($newAccount, 'Akun berhasil dibuat', 201);
+    }
+
     #[OA\Get(
         path: "/api/v1/accounts/{id}",
         summary: "Ambil detail & saldo akun tertentu",
