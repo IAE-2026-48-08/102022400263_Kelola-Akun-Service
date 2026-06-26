@@ -32,12 +32,18 @@ RUN composer install --no-dev --optimize-autoloader --no-interaction
 RUN cp -n .env.example .env || true
 RUN php artisan key:generate --force
 
-# Generate Swagger docs and clear Lighthouse cache on build
-RUN php artisan l5-swagger:generate
-RUN php artisan lighthouse:clear-cache
+# Clear Lighthouse schema cache pada build time
+RUN php artisan lighthouse:clear-cache || true
 
-# [BYPASS] Paksa Apache berjalan sebagai root agar bebas menulis cache walau di-bind mount
-ENV APACHE_RUN_USER=root
-ENV APACHE_RUN_GROUP=root
+# Fix permissions: www-data harus bisa menulis ke storage dan bootstrap/cache
+RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache \
+    && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
+
+# Buat entrypoint script: generate Swagger saat container start (runtime),
+# bukan saat build — supaya storage/ tidak tertimpa bind-mount volume.
+COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
 EXPOSE 80
+
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
