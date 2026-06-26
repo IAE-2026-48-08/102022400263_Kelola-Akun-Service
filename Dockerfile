@@ -36,8 +36,8 @@ RUN php artisan key:generate --force
 RUN php artisan l5-swagger:generate
 RUN php artisan lighthouse:clear-cache
 
-# Set permission yang benar untuk storage dan cache
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache \
-    && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
+# [BYPASS] Paksa Apache berjalan sebagai root agar bebas menulis cache walau di-bind mount
+ENV APACHE_RUN_USER=root
+ENV APACHE_RUN_GROUP=root
 
 EXPOSE 80
