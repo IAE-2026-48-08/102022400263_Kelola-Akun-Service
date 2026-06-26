@@ -16,6 +16,11 @@ echo "[entrypoint] Ensuring storage/api-docs directory exists..."
 mkdir -p /var/www/html/storage/api-docs
 chown -R www-data:www-data /var/www/html/storage/api-docs
 
+echo "[entrypoint] Initializing SQLite database (required for cache/session/lighthouse)..."
+touch /var/www/html/database/database.sqlite
+chown www-data:www-data /var/www/html/database/database.sqlite
+php /var/www/html/artisan migrate --force || echo "[entrypoint] WARNING: migrate failed, continuing..."
+
 echo "[entrypoint] Generating Swagger / OpenAPI spec..."
 php /var/www/html/artisan l5-swagger:generate || echo "[entrypoint] WARNING: l5-swagger:generate failed, continuing..."
 
